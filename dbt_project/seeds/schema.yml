@@ -1,0 +1,35 @@
+version: 2
+
+seeds:
+  - name: taxi_zone_lookup
+    description: >
+      Αντιστοίχιση των αριθμών ζωνών του TLC σε περιοχές (borough, όνομα ζώνης).
+      Πηγή: TLC Trip Record Data, "Taxi Zone Lookup Table".
+    columns:
+      - name: LocationID
+        description: Αριθμός ζώνης, όπως εμφανίζεται στα PULocationID και DOLocationID.
+        data_tests:
+          - unique
+          - not_null
+
+  - name: cbd_zone_flags
+    description: >
+      Ταξινόμηση κάθε ζώνης TLC ως προς το CBD (νότια της 60ής οδού), υπολογισμένη από το shapefile
+      με το αρχείο analyses/zones_06_export_cbd_flags.sql. Ορίζεται ΜΟΝΟ από τη γεωγραφία και ποτέ
+      από δεδομένα μετά την πολιτική (αποφυγή post-treatment bias).
+    columns:
+      - name: location_id
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('taxi_zone_lookup')
+                field: LocationID
+      - name: cbd_group
+        description: inside, near_border, outside ή unknown.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [inside, near_border, outside, unknown]

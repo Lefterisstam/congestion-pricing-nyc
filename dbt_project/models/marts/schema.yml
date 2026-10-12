@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: mart_route_day
+    description: "Μία γραμμή ανά ημέρα και ζεύγος (ομάδα επιβίβασης, ομάδα αποβίβασης). Το route_group προκύπτει από το ζεύγος. Είναι η είσοδος της ανάλυσης στην Python."
+    columns:
+      - name: pickup_date
+        data_tests:
+          - not_null
+      - name: pickup_group
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['inside', 'near_border', 'outside', 'unknown']
+      - name: dropoff_group
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['inside', 'near_border', 'outside', 'unknown']
+      - name: touches_airport
+        description: "Αληθές αν οποιοδήποτε άκρο της διαδρομής είναι αεροδρόμιο (Newark, JFK, LaGuardia)"
+        data_tests:
+          - not_null
+      - name: route_group
+        description: "treated = Κέντρο, buffer = Ενδιάμεση, control = Αναφορά (και οι δύο άκρες outside), excluded = Εξαιρούνται"
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['treated', 'buffer', 'control', 'excluded']
+      - name: is_post_policy
+        data_tests:
+          - not_null
+      - name: n_trips
+        data_tests:
+          - not_null
+  - name: mart_control_zone_day
+    description: "Ανά ημέρα και ζώνη επιβίβασης, διαδρομές ομάδας αναφοράς χωρίς αεροδρόμια (δότες για synthetic control)"
+    columns:
+      - name: pickup_date
+        data_tests:
+          - not_null
+      - name: pickup_zone_id
+        data_tests:
+          - not_null
+      - name: is_post_policy
+        data_tests:
+          - not_null
+      - name: n_trips
+        data_tests:
+          - not_null

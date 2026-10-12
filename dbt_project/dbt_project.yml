@@ -1,0 +1,25 @@
+name: congestion
+version: "1.0.0"
+config-version: 2
+profile: congestion
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+
+models:
+  congestion:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
+vars:
+  max_duration_hours: 4
+  max_distance_miles: 100
+  max_speed_mph: 80
+  policy_start_date: '2025-01-05'

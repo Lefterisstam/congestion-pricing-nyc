@@ -1,0 +1,12 @@
+.venv/
+data/
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
+*.duckdb
+*.duckdb.wal
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+.pytest_cache/
+dbt_project/.user.yml

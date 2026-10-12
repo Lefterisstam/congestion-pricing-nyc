@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: int_trips_flagged
+    description: >
+      Μία γραμμή ανά διαδρομή (grain = trip), όπως στο staging, με επιπλέον
+      υπολογισμένες στήλες και σημαίες εγκυρότητας. ΔΕΝ διαγράφει γραμμές,
+      τις σημαδεύει. Τα κατώφλια ορίζονται στο dbt_project.yml (vars).
+    columns:
+      - name: is_valid_trip
+        description: >
+          Αληθές αν η παραλαβή είναι μέσα στον μήνα του αρχείου και η διάρκεια
+          είναι θετική και ίση ή μικρότερη από το όριο. Για μέτρηση ζήτησης.
+        data_tests:
+          - not_null
+      - name: is_valid_for_speed
+        description: >
+          Αληθές αν η is_valid_trip ισχύει και επιπλέον η απόσταση είναι
+          θετική, ίση ή μικρότερη από το όριο, και η ταχύτητα εντός ορίου.
+        data_tests:
+          - not_null
+      - name: is_valid_for_count
+        description: "Έγκυρη διαδρομή για μέτρηση πλήθους. Όπως η is_valid_trip, αλλά περιλαμβάνει τις διαδρομές της εταιρείας 7 με διάρκεια 0."
+        data_tests:
+          - not_null
+      - name: trip_rejection_reason
+        description: Ο πρώτος κανόνας που απέτυχε. NULL σημαίνει ότι η διαδρομή είναι έγκυρη.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - pickup_outside_file_month
+                  - non_positive_duration
+                  - duration_too_long
+      - name: speed_exclusion_reason
+        description: Λόγος αποκλεισμού από την ταχύτητα, μόνο για διαδρομές που είναι έγκυρες ως διαδρομές.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - zero_distance
+                  - distance_too_long
+                  - speed_too_high
+
+  - name: int_trips_rejected
+    description: >
+      Πόσες γραμμές απορρίφθηκαν ή αποκλείστηκαν και γιατί, ανά μήνα αρχείου.
+      Χρησιμεύει για να ελέγχουμε ότι ο καθαρισμός δεν αλλάζει απότομα μεταξύ περιόδων.

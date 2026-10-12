@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: stg_yellow_trips
+    description: >
+      Κίτρινα ταξί της Νέας Υόρκης, μία γραμμή ανά διαδρομή (grain = trip).
+      Μόνο μετονομασία και τύποι, χωρίς φιλτράρισμα. Ο καθαρισμός γίνεται
+      στο intermediate στάδιο.
+    columns:
+      - name: pickup_at
+        description: Ώρα παραλαβής (τοπική ώρα Νέας Υόρκης).
+        data_tests:
+          - not_null
+      - name: dropoff_at
+        description: Ώρα αποβίβασης.
+        data_tests:
+          - not_null
+      - name: pickup_zone_id
+        description: Αριθμός ζώνης TLC όπου έγινε η παραλαβή.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('taxi_zone_lookup')
+                field: LocationID
+      - name: dropoff_zone_id
+        description: Αριθμός ζώνης TLC όπου έγινε η αποβίβαση.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('taxi_zone_lookup')
+                field: LocationID
+      - name: cbd_congestion_fee
+        description: >
+          Χρέωση συμφόρησης CBD. Υπάρχει ΜΟΝΟ στα αρχεία από το 2025.
+          Στα προηγούμενα είναι NULL, που σημαίνει "η στήλη δεν υπήρχε"
+          και ΟΧΙ "η χρέωση ήταν 0".

@@ -1,0 +1,10 @@
+congestion:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/congestion.duckdb
+      threads: 2
+      settings:
+        memory_limit: "2GB"
+        temp_directory: "../data/duckdb_tmp"
